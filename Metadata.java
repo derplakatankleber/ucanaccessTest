@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
 public class Metadata {
@@ -76,6 +77,9 @@ public class Metadata {
 			"				FROM UCA_METADATA.COLUMNS  c INNER JOIN UCA_METADATA.TABLES  t " +
 			"				ON(t.TABLE_ID=c.TABLE_ID ) WHERE t.ESCAPED_TABLE_NAME=nvl(?,t.ESCAPED_TABLE_NAME) AND c.ESCAPED_COLUMN_NAME=? ";
 	
+	private final static String SELECT_COLUMNS="SELECT DISTINCT c.COLUMN_NAME,c.ORIGINAL_TYPE IN('COUNTER','GUID') as IS_AUTOINCREMENT, c.ORIGINAL_TYPE='MONEY' as IS_CURRENCY  " +
+			"				FROM UCA_METADATA.COLUMNS  c INNER JOIN UCA_METADATA.TABLES  t " +
+			"				ON(t.TABLE_ID=c.TABLE_ID ) WHERE t.ESCAPED_TABLE_NAME=nvl(?,t.ESCAPED_TABLE_NAME) ";
 	
 	private final static String SELECT_COLUMN_ESCAPED="SELECT c.ESCAPED_COLUMN_NAME" +
 	"				FROM UCA_METADATA.COLUMNS  c INNER JOIN UCA_METADATA.TABLES  t " +
@@ -216,6 +220,29 @@ public class Metadata {
 		}finally{
 			if(ps!=null)ps.close();
 		}
+	}
+	
+	public ArrayList<String> getColumnNames(String tableName) throws SQLException {
+	    PreparedStatement ps = null;
+	    try {
+		boolean camb = SYSTEM_SUBQUERY.equals(tableName);
+		tableName = camb ? null : tableName;
+		ps = conn.prepareStatement(SELECT_COLUMNS);
+		ps.setString(1, tableName);
+		ResultSet rs = ps.executeQuery();
+		ArrayList<String> result = new ArrayList<String>();
+		while (rs.next()) {
+		    result.add(rs.getString("COLUMN_NAME"));
+		}
+		if (!camb) {
+		    return result;
+		}
+		return null;
+	    } finally {
+		if (ps != null) {
+		    ps.close();
+		}
+	    }
 	}
 	
 	public boolean isAutoIncrement(String tableName,String columnName) throws SQLException {

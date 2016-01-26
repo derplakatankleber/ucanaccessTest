@@ -1185,6 +1185,16 @@ public class LoadJet {
 						name=row.expression.substring(beginIndex+1);
 						if(name.endsWith("]"))
 							name=name.substring(0,name.length()-1);
+                        if (name.contentEquals("*")) {
+                            String table = row.expression.substring(0, beginIndex);
+                            ArrayList<String> result = metadata.getColumnNames(table);
+                            if (result != null) {
+                                for (String column : result) {
+                                    metadata.newColumn(column, SQLConverter.preEscapingIdentifier(column), null, seq);
+                                }
+                                return;
+                            }
+                        }
 					}
 					metadata.newColumn(name, SQLConverter.preEscapingIdentifier(name), null, seq);
 					
