@@ -1192,7 +1192,6 @@ public class LoadJet {
                                 for (String column : result) {
                                     metadata.newColumn(column, SQLConverter.preEscapingIdentifier(column), null, seq);
                                 }
-                                return;
                             }
                         }
 					}
