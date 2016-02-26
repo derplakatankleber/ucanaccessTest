@@ -1,10 +1,11 @@
-1187a1188,1196
->                         if (name.contentEquals("*")) {
->                             String table = row.expression.substring(0, beginIndex);
->                             ArrayList<String> result = metadata.getColumnNames(table);
->                             if (result != null) {
->                                 for (String column : result) {
->                                     metadata.newColumn(column, SQLConverter.preEscapingIdentifier(column), null, seq);
->                                 }
->                             }
->                         }
++1187a1188,1197
++>                         if (name.contentEquals("*")) {
++>                             String table = row.expression.substring(0, beginIndex);
++>                             ArrayList<String> result = metadata.getColumnNames(table);
++>                             if (result != null) {
++>                                 for (String column : result) {
++>                                     metadata.newColumn(column, SQLConverter.preEscapingIdentifier(column), null, seq);
++>                                 }
++>                                 continue;
++>                             }
++>                         }
